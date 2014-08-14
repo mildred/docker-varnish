@@ -23,8 +23,6 @@ VOLUME /var/lib/varnish
 
 EXPOSE 80
 
-ENV VARNISH_PORT 80
-
 CMD touch /etc/varnish/default.vcl; \
     cp /etc/varnish/default.vcl /etc/varnish/default.subst.vcl; \
     env | while read envline; do \
@@ -33,5 +31,5 @@ CMD touch /etc/varnish/default.vcl; \
         sed -i "s|%${k}%|${v}|g" /etc/varnish/default.subst.vcl; \
     done; \
     varnishlog -D; \
-    exec varnishd -F -f /etc/varnish/default.subst.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT}
+    exec varnishd -F -f /etc/varnish/default.subst.vcl -s malloc,100M -a 0.0.0.0:80
 
