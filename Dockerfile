@@ -19,6 +19,7 @@ RUN set -e; \
 RUN mkdir -p /etc/varnish;
 
 VOLUME /etc/varnish
+VOLUME /var/lib/varnish
 
 EXPOSE 80
 
@@ -27,12 +28,12 @@ ENV VARNISH_PORT 80
 # https://stackoverflow.com/questions/21056450/how-to-inject-environment-variables-in-varnish-configuration/25306572#25306572
 
 CMD touch /etc/varnish/default.vcl; \
-    mkdir -p /env; \
+    cp /etc/varnish/default.vcl /etc/varnish/default.subst.vcl; \
     env | while read envline; do \
         k=${envline%%=*}; \
         v=${envline#*=}; \
-        echo -n "$v" >"/env/$k"; \
+        sed -i 's|%$k%|${v//|/\|}|g' /etc/varnish/default.subst.vcl; \
     done; \
     varnishlog -D; \
-    exec varnishd -F -f /etc/varnish/default.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT}
+    exec varnishd -F -f /etc/varnish/default.subst.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT}
 
