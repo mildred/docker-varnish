@@ -33,5 +33,6 @@ CMD touch /etc/varnish/default.vcl; \
         v=${envline#*=}; \
         echo -n "$v" >"/env/$k"; \
     done; \
+    varnishlog &; \
     exec varnishd -F -f /etc/varnish/default.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT}
 
