@@ -32,7 +32,7 @@ CMD touch /etc/varnish/default.vcl; \
     env | while read envline; do \
         k=${envline%%=*}; \
         v=${envline#*=}; \
-        sed -i 's|%$k%|${v//|/\|}|g' /etc/varnish/default.subst.vcl; \
+        sed -i "s|%${k//|/\|}%|${v//|/\|}|g" /etc/varnish/default.subst.vcl; \
     done; \
     varnishlog -D; \
     exec varnishd -F -f /etc/varnish/default.subst.vcl -s malloc,100M -a 0.0.0.0:${VARNISH_PORT}
